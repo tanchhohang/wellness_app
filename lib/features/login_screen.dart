@@ -108,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
             width: 380.0,
             child: FilledButton(
               style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(Colors.white),
+                backgroundColor: WidgetStatePropertyAll(Colors.white12),
                 shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -118,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 Navigator.pushReplacementNamed(context, '/dashboard');
               },
-              child: const Text('Login', style: TextStyle(fontSize: 18),),
+              child: const Text('Login', style: TextStyle(fontSize: 18, color: Colors.white),),
             ),
           ),
           //const SizedBox(height: 30),
@@ -130,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
             width: 380.0,
             child: FilledButton(
               style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(Colors.white),
+                backgroundColor: WidgetStatePropertyAll(Colors.white12),
                 shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -146,12 +146,12 @@ class _LoginPageState extends State<LoginPage> {
                   Icon(
                     Icons.mail_outline,
                     size: 25.0,
-                    color: Colors.black,
+                    color: Colors.white,
                   ),
                   const SizedBox(width: 5),
                   const Text(
                     'Google',
-                    style: TextStyle(color: Colors.black, fontSize: 18),
+                    style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 ],
               ),

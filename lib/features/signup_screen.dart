@@ -115,7 +115,7 @@ class _SignupPageState extends State<SignupPage> {
             width: 380.0,
             child: FilledButton(
               style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(Colors.white),
+                backgroundColor: WidgetStatePropertyAll(Colors.white12),
                 shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -125,7 +125,7 @@ class _SignupPageState extends State<SignupPage> {
               onPressed: () {
                 Navigator.pushReplacementNamed(context, '/dashboard');
               },
-              child: const Text('Signup', style: TextStyle(fontSize: 18),),
+              child: const Text('Signup', style: TextStyle(fontSize: 18, color: Colors.white),),
             ),
           ),
 
@@ -137,7 +137,7 @@ class _SignupPageState extends State<SignupPage> {
             width: 380.0,
             child: FilledButton(
               style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(Colors.white),
+                backgroundColor: WidgetStatePropertyAll(Colors.white12),
                 shape: WidgetStatePropertyAll(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -147,7 +147,7 @@ class _SignupPageState extends State<SignupPage> {
               onPressed: () {
                 Navigator.pushReplacementNamed(context, '/dashboard');
               },
-              child: const Text('Signup with Google', style: TextStyle(fontSize: 18),),
+              child: const Text('Signup with Google', style: TextStyle(fontSize: 18, color: Colors.white),),
             ),
           ),
 

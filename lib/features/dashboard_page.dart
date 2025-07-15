@@ -49,14 +49,15 @@ class _DashboardPageState extends State<DashboardPage> {
               Navigator.pushReplacementNamed(context, '/profile');
             },
           ),
+
         ],
       ),
 
       body: Column(
         spacing: 15,
-
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          SizedBox(height: 5,),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
