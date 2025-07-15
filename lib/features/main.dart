@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:wellness_app/features//login_screen.dart';
 import 'package:wellness_app/features//profile_page.dart';
+import 'package:wellness_app/features/add_category.dart';
+import 'package:wellness_app/features/add_quote.dart';
 import 'package:wellness_app/features/signup_screen.dart';
-import 'package:wellness_app/features//dashboard_page.dart';
+import 'package:wellness_app/dashboard/dashboard_page.dart';
+import 'package:wellness_app/dashboard/dashboard_page_2.dart';
 
 
 void main() {
@@ -62,10 +65,12 @@ class WellnessApp extends StatelessWidget {
       ),
 
       routes:{
-        '/' : (context) => const LoginPage(),
+        '/login' : (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
-        '/dashboard': (context) => const DashboardPage(),
+        '/dashboard': (context) => const DashboardPageTwo(),
         '/profile': (context) => const ProfilePage(),
+        '/addcategory': (context) => const AddCategory(),
+        '/addquote': (context) => const AddQuote(),
       }
 
     );

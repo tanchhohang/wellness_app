@@ -187,7 +187,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
 
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/login');
+                      },
                       icon: Icon(
                         Icons.logout,
                         size: 35,
