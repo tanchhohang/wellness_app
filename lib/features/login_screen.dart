@@ -1,5 +1,10 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:wellness_app/auth/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -137,8 +142,17 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/dashboard');
+              onPressed: () async {
+                UserCredential? user = await AuthService()
+                    .signInWithGoogle();
+                if (user != null) {
+                  log("login success");
+                  Navigator.of(
+                    context,
+                  ).pushNamed('/dashboard');
+                } else {
+                  log("login failed");
+                }
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

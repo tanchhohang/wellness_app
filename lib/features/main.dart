@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:wellness_app/features//login_screen.dart';
 import 'package:wellness_app/features//profile_page.dart';
@@ -8,7 +9,11 @@ import 'package:wellness_app/dashboard/dashboard_page.dart';
 import 'package:wellness_app/dashboard/dashboard_page_2.dart';
 
 
-void main() {
+
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const WellnessApp());
 }
 
@@ -64,6 +69,7 @@ class WellnessApp extends StatelessWidget {
         hoverColor: Colors.transparent,
       ),
 
+        home: const LoginPage(),
       routes:{
         '/login' : (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),

@@ -1,6 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:wellness_app/features//login_screen.dart';
 import 'package:wellness_app/features/signup_screen.dart';
+
+import 'package:wellness_app/auth/auth_service.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -83,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ], //MAIN body (ROW)
               ),
             ),
-          
+
             Text('MAKE IT YOURS',style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white54),),
 
             Container(
@@ -187,8 +192,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
 
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/login');
+                      onPressed: () async {
+                        await AuthService().signOut();
+                        Navigator.of(
+                          context,
+                        ).pushNamed('/login');
                       },
                       icon: Icon(
                         Icons.logout,
