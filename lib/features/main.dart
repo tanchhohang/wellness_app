@@ -7,6 +7,7 @@ import 'package:wellness_app/features/add_quote.dart';
 import 'package:wellness_app/features/signup_screen.dart';
 import 'package:wellness_app/dashboard/dashboard_page.dart';
 import 'package:wellness_app/dashboard/dashboard_page_2.dart';
+import 'package:wellness_app/features/user_preferences.dart';
 
 
 
@@ -73,10 +74,12 @@ class WellnessApp extends StatelessWidget {
       routes:{
         '/login' : (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
-        '/dashboard': (context) => const DashboardPageTwo(),
+        '/admindashboard': (context) => const DashboardPageTwo(),
+        '/userdashboard': (context) => const DashboardPage(),
         '/profile': (context) => const ProfilePage(),
         '/addcategory': (context) => const AddCategory(),
         '/addquote': (context) => const AddQuote(),
+        '/userpreference': (context) => const UserPreferencePage(),
       }
 
     );

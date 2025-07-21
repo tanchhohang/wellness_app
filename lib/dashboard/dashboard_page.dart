@@ -63,11 +63,11 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               SizedBox(
                 width: 190.0,
-                height:60,
+                height:70,
                 child: FilledButton.icon(
                   style: ButtonStyle(
                     alignment: Alignment.centerLeft,
-                    backgroundColor: WidgetStatePropertyAll(Colors.white30),
+                    backgroundColor: WidgetStatePropertyAll(Colors.white12),
                     shape: WidgetStatePropertyAll(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -87,10 +87,10 @@ class _DashboardPageState extends State<DashboardPage> {
 
               SizedBox(
                 width: 190.0,
-                height:60,
+                height:70,
                 child: FilledButton.icon(
                   style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(Colors.white30),
+                    backgroundColor: WidgetStatePropertyAll(Colors.white12),
                     shape: WidgetStatePropertyAll(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -132,7 +132,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 height: 100.0,
                 child: FilledButton(
                   style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(Colors.white30),
+                    backgroundColor: WidgetStatePropertyAll(Colors.white12),
                     shape: WidgetStatePropertyAll(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -169,11 +169,11 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               SizedBox(
                 width: 400.0,
-                height: 60.0,
+                height: 70.0,
                 child: FilledButton.icon(
                   style: ButtonStyle(
                     alignment: Alignment.centerLeft,
-                    backgroundColor: WidgetStatePropertyAll(Colors.white30),
+                    backgroundColor: WidgetStatePropertyAll(Colors.white12),
                     shape: WidgetStatePropertyAll(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -194,14 +194,14 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               SizedBox(
                 width: 400.0,
-                height: 60.0,
+                height: 70.0,
                 child: FilledButton.icon(
                   onPressed: () {},
                   icon: Icon(
                     Icons.emoji_flags, size: 30, color: Colors.white,),
                   style: ButtonStyle(
                     alignment: Alignment.centerLeft,
-                    backgroundColor: WidgetStatePropertyAll(Colors.white30),
+                    backgroundColor: WidgetStatePropertyAll(Colors.white12),
                     shape: WidgetStatePropertyAll(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -220,13 +220,13 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               SizedBox(
                 width: 400.0,
-                height: 60.0,
+                height: 70.0,
                 child: FilledButton.icon(
                   onPressed: () {},
                   icon: Icon(Icons.star_border, size: 30, color: Colors.white,),
                   style: ButtonStyle(
                     alignment: Alignment.centerLeft,
-                    backgroundColor: WidgetStatePropertyAll(Colors.white30),
+                    backgroundColor: WidgetStatePropertyAll(Colors.white12),
                     shape: WidgetStatePropertyAll(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -245,14 +245,14 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               SizedBox(
                 width: 400.0,
-                height: 60.0,
+                height: 70.0,
                 child: FilledButton.icon(
                   onPressed: () {},
                   icon: Icon(
                     Icons.handshake_outlined, size: 30, color: Colors.white,),
                   style: ButtonStyle(
                     alignment: Alignment.centerLeft,
-                    backgroundColor: WidgetStatePropertyAll(Colors.white30),
+                    backgroundColor: WidgetStatePropertyAll(Colors.white12),
                     shape: WidgetStatePropertyAll(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -292,7 +292,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   icon: Icon(Icons.air, size: 30, color: Colors.white,),
                   style: ButtonStyle(
                     alignment: Alignment.centerLeft,
-                    backgroundColor: WidgetStatePropertyAll(Colors.white30),
+                    backgroundColor: WidgetStatePropertyAll(Colors.white12),
                     shape: WidgetStatePropertyAll(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),

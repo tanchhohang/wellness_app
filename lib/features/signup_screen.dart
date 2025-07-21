@@ -201,7 +201,7 @@ class _SignupPageState extends State<SignupPage> {
                       uuid: user.user?.uid??'',
                   );
 
-                  Navigator.pushNamed(context, '/dashboard');
+                  Navigator.pushNamed(context, '/userpreference');
                 } else {
                   log("Signup failed");
                   showMessage('Signup Failed');
