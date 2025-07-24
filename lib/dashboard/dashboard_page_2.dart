@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:wellness_app/auth/firestore_service.dart';
 
 class DashboardPageTwo extends StatefulWidget {
   const DashboardPageTwo({super.key});
@@ -9,7 +9,38 @@ class DashboardPageTwo extends StatefulWidget {
 }
 
 class _DashboardPageTwoState extends State<DashboardPageTwo> {
+  int _totalCategories = 0;
+  int _totalQuotes = 0;
+  int _totalUsers = 0;
+  bool _isLoading = true;
+
   @override
+
+  void initState() {
+    super.initState();
+    _loadDashboardData();
+  }
+
+  Future<void> _loadDashboardData() async {
+    try {
+      int userCount = await FireStoreService().getTotalUser(userId: "");
+      int categoryCount = await FireStoreService().getTotalCategory(userId: "");
+      int quoteCount = await FireStoreService().getTotalQuote(userId: "");
+
+      setState(() {
+        _totalCategories = categoryCount;
+        _totalQuotes = quoteCount;
+        _totalUsers = userCount;
+        _isLoading = false;
+      });
+    } catch (e) {
+      // handle error if needed
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
     Color getColor(Set<WidgetState> states) {
       const Set<WidgetState> interactiveStates = <WidgetState>{
@@ -78,7 +109,7 @@ class _DashboardPageTwoState extends State<DashboardPageTwo> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text('Total Users', style: TextStyle(fontSize: 18, color: Colors.white54),),
-                          Text('1488888', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),)
+                          Text('$_totalUsers', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),)
                         ],
                       ),
                     ],
@@ -106,7 +137,7 @@ class _DashboardPageTwoState extends State<DashboardPageTwo> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text('Total Category', style: TextStyle(fontSize: 16),),
-                            Text('100',style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),)
+                            Text('$_totalCategories',style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),)
                           ]
                       ),
 
@@ -149,7 +180,7 @@ class _DashboardPageTwoState extends State<DashboardPageTwo> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text('Total Quotes', style: TextStyle(fontSize: 16),),
-                            Text('200',style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),)
+                            Text('$_totalQuotes',style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),)
                           ]
                       ),
 

@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/userdashboard');
+                Navigator.pushReplacementNamed(context, '/admindashboard');
               },
               child: const Text('Login', style: TextStyle(fontSize: 18, color: Colors.white),),
             ),
@@ -149,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                   log("login success");
                   Navigator.of(
                     context,
-                  ).pushNamed('/userdashboard');
+                  ).pushNamed('/admindashboard');
                 } else {
                   log("login failed");
                 }

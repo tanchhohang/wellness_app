@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:wellness_app/auth/fcm_service.dart';
 import 'package:wellness_app/features//login_screen.dart';
 import 'package:wellness_app/features//profile_page.dart';
 import 'package:wellness_app/features/add_category.dart';
@@ -13,8 +16,13 @@ import 'package:wellness_app/features/user_preferences.dart';
 
 
 void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding _ = WidgetsFlutterBinding.ensureInitialized();
+  final FCMServices fcmServices = FCMServices();
   await Firebase.initializeApp();
+  await fcmServices.initializeCloudMessaging();
+  fcmServices.listenFCMessage();
+  String? fcmToken = await fcmServices.getFCMToken();
+  log('fcm token: $fcmToken');
   runApp(const WellnessApp());
 }
 
@@ -77,8 +85,8 @@ class WellnessApp extends StatelessWidget {
         '/admindashboard': (context) => const DashboardPageTwo(),
         '/userdashboard': (context) => const DashboardPage(),
         '/profile': (context) => const ProfilePage(),
-        '/addcategory': (context) => const AddCategory(),
-        '/addquote': (context) => const AddQuote(),
+        '/addcategory': (context) => const AddCategory(userId: '',),
+        '/addquote': (context) => const AddQuote(userId: '',),
         '/userpreference': (context) => const UserPreferencePage(),
       }
 

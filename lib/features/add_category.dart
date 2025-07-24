@@ -1,10 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
+import '../auth/firestore_service.dart';
 
 
 class AddCategory extends StatefulWidget {
-  const AddCategory({super.key});
+  final String userId;
+  const AddCategory({super.key, required this.userId});
 
   @override
   State<AddCategory> createState() => _AddCategoryState();
@@ -13,9 +14,58 @@ class AddCategory extends StatefulWidget {
 class _AddCategoryState extends State<AddCategory> {
   bool isChecked = false;
   String selectedType = 'Quotes';
+  bool isLoading = false;
+
+  final TextEditingController _categoryNameController = TextEditingController();
 
   @override
+
+  Future<void> _saveCategory() async {
+    // Validate input
+    if (_categoryNameController.text.trim().isEmpty) {
+      _showSnackBar('Please enter a category name', isError: true);
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // Call the FireStore service to add category
+      bool success = await FireStoreService().addCategory(
+        userId: widget.userId,
+        categoryName: _categoryNameController.text.trim(),
+      );
+
+      if (success) {
+        _showSnackBar('Category added successfully!');
+        Navigator.pushReplacementNamed(context, '/admindashboard');
+      } else {
+        _showSnackBar('Failed to add category. Please try again.', isError: true);
+      }
+    } catch (e) {
+      _showSnackBar('Error: ${e.toString()}', isError: true);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+
+  void _showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+
   Widget build(BuildContext context) {
+/*
     Color getColor(Set<WidgetState> states) {
       const Set<WidgetState> interactiveStates = <WidgetState>{
         WidgetState.pressed,
@@ -27,6 +77,7 @@ class _AddCategoryState extends State<AddCategory> {
       }
       return Colors.white;
     }
+*/
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -40,9 +91,8 @@ class _AddCategoryState extends State<AddCategory> {
             color: Colors.white,
           ),
         ),
-        //automaticallyImplyLeading: false,
-
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(25.0),
         child: Column(
@@ -62,6 +112,7 @@ class _AddCategoryState extends State<AddCategory> {
                   ),
                 ),
                 TextField(
+                  controller: _categoryNameController,
                   decoration: InputDecoration(
                     hintText: 'Category Name',
                   ),
@@ -212,11 +263,11 @@ class _AddCategoryState extends State<AddCategory> {
                       onTap: () {
                         // Handle image selection
                         print('Image selection tapped');
+                        _showSnackBar('Image selection coming soon');
                       },
                       child: DottedBorder(
                         color: Colors.grey[600]!,
                         strokeWidth: 2,
-                        // Dash pattern: [dash length, gap length]
                         dashPattern: [8, 4],
                         borderType: BorderType.RRect,
                         radius: Radius.circular(12),
@@ -233,7 +284,10 @@ class _AddCategoryState extends State<AddCategory> {
                               Container(
                                 width: 60,
                                 height: 60,
-                                child: Icon(Icons.image, size: 50),
+                                child: Icon(
+                                    Icons.image,
+                                    size: 50
+                                ),
                               ),
                               SizedBox(height: 15),
                               Text('Tap to choose image'),
@@ -252,9 +306,7 @@ class _AddCategoryState extends State<AddCategory> {
               height: 70,
               width: 500,
               child: FilledButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/dashboard');
-                },
+                onPressed: isLoading ? null : _saveCategory,
                 style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll(Colors.white12),
                   shape: WidgetStatePropertyAll(

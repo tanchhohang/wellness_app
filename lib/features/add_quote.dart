@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import '../auth/firestore_service.dart';
 
 
 class AddQuote extends StatefulWidget {
-  const AddQuote({super.key});
+  final String userId;
+  const AddQuote({super.key, required this.userId});
 
   @override
   State<AddQuote> createState() => _AddQuoteState();
@@ -11,6 +13,11 @@ class AddQuote extends StatefulWidget {
 class _AddQuoteState extends State<AddQuote> {
   bool isChecked = false;
   String? selectedCategory;
+  bool isLoading = false;
+  List<Map<String, dynamic>> userCategories = [];
+
+  final TextEditingController _authorNameController = TextEditingController();
+  final TextEditingController _quoteController = TextEditingController();
 
   final List<String> categories = [
     'Inspirational',
@@ -18,19 +25,86 @@ class _AddQuoteState extends State<AddQuote> {
   ];
 
   @override
-  Widget build(BuildContext context) {
-    Color getColor(Set<WidgetState> states) {
-      const Set<WidgetState> interactiveStates = <WidgetState>{
-        WidgetState.pressed,
-        WidgetState.hovered,
-        WidgetState.focused,
-      };
-      if (states.any(interactiveStates.contains)) {
-        return Colors.black;
-      }
-      return Colors.white;
+  void initState() {
+    super.initState();
+    _loadUserCategories();
+  }
+
+  Future<void> _loadUserCategories() async {
+    try {
+      // Load user categories from FireStore
+      List<Map<String, dynamic>> categories = await FireStoreService().getUserCategories(
+        userId: widget.userId,
+      );
+
+      setState(() {
+        userCategories = categories;
+      });
+    } catch (e) {
+      _showSnackBar('Failed to load categories: ${e.toString()}', isError: true);
+    }
+  }
+
+  Future<void> _saveQuote() async {
+    // Validate input
+    if (selectedCategory == null || selectedCategory!.isEmpty) {
+      _showSnackBar('Please select a category', isError: true);
+      return;
     }
 
+    if (_authorNameController.text
+        .trim()
+        .isEmpty) {
+      _showSnackBar('Please enter author name', isError: true);
+      return;
+    }
+
+    if (_quoteController.text
+        .trim()
+        .isEmpty) {
+      _showSnackBar('Please enter the quote', isError: true);
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // Call the FireStore service to add quote
+      bool success = await FireStoreService().addQuote(
+        userId: widget.userId,
+        categoryName: selectedCategory!,
+        authorName: _authorNameController.text.trim(),
+        quoteText: _quoteController.text.trim(),
+      );
+
+      if (success) {
+        _showSnackBar('Quote added successfully!');
+        Navigator.pushReplacementNamed(context, '/admindashboard');
+      } else {
+        _showSnackBar('Failed to add quote. Please try again.', isError: true);
+      }
+    } catch (e) {
+      _showSnackBar('Error: ${e.toString()}', isError: true);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void _showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -66,7 +140,8 @@ class _AddQuoteState extends State<AddQuote> {
                   child: DropdownButtonFormField<String>(
                     value: selectedCategory,
                     hint: Text(
-                      'Choose category', style: TextStyle(fontSize: 18,color: Colors.white),),
+                      'Choose category',
+                      style: TextStyle(fontSize: 18,color: Colors.white),),
                     icon: Icon(
                       Icons.arrow_drop_down,
                       color: Colors.white,
@@ -81,11 +156,11 @@ class _AddQuoteState extends State<AddQuote> {
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.all(16),
                     ),
-                    items: categories.map((String category) {
+                    items: userCategories.map((Map<String, dynamic> category) {
                       return DropdownMenuItem<String>(
-                        value: category,
+                        value: category['name'],
                         child: Text(
-                          category,
+                          category['name'],
                           style: TextStyle(color: Colors.white),
                         ),
                       );
@@ -98,6 +173,17 @@ class _AddQuoteState extends State<AddQuote> {
                   ),
                 ),
 
+                if (userCategories.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'No categories found. Please add a category first.',
+                      style: TextStyle(
+                        color: Colors.orange,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
 
                 Text(
                   'Author Name',
@@ -109,6 +195,7 @@ class _AddQuoteState extends State<AddQuote> {
                 ),
 
                 TextField(
+                  controller: _authorNameController,
                   decoration: InputDecoration(
                     hintText: 'Author Name',
                     contentPadding: EdgeInsets.all(20),
@@ -125,6 +212,7 @@ class _AddQuoteState extends State<AddQuote> {
 
                 Container(
                   child:  TextField(
+                    controller: _quoteController,
                     maxLines: 10,//increases the height
                     decoration: InputDecoration(
                       hintText: 'Write a Quote',
@@ -139,9 +227,7 @@ class _AddQuoteState extends State<AddQuote> {
               height: 70,
               width: 500,
               child: FilledButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/dashboard');
-                },
+                onPressed: isLoading ? null : _saveQuote,
                 style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll(Colors.white12),
                   shape: WidgetStatePropertyAll(

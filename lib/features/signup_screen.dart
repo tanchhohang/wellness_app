@@ -191,7 +191,10 @@ class _SignupPageState extends State<SignupPage> {
                   return;
                 }
 
-                UserCredential? user = await AuthService().signUpWithEmailPassword(emailController.text, passwordController.text, usernameController.text);
+                UserCredential? user = await AuthService().signUpWithEmailPassword(
+                    emailController.text,
+                    passwordController.text,
+                    usernameController.text);
                 if (user != null) {
                   log("Signup success");
 
