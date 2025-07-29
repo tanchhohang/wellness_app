@@ -19,10 +19,10 @@ class _AddQuoteState extends State<AddQuote> {
   final TextEditingController _authorNameController = TextEditingController();
   final TextEditingController _quoteController = TextEditingController();
 
-  final List<String> categories = [
+/*  final List<String> categories = [
     'Inspirational',
     'Motivational',
-  ];
+  ];*/
 
   @override
   void initState() {

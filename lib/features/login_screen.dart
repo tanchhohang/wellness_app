@@ -1,10 +1,13 @@
 import 'dart:developer';
 
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:show_hide_password/show_hide_password.dart';
 
 import 'package:wellness_app/auth/auth_service.dart';
+
+import 'package:wellness_app/auth/firestore_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,6 +18,45 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool isChecked = false;
+  String role = 'customer';
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your email';
+    }
+
+    if (!EmailValidator.validate(value)) {
+      return 'Please enter a valid email address';
+    }
+
+    return null;
+  }
+
+  // Simple password validation
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your password';
+    }
+
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+
+    return null;
+  }
+
+  // Show error message
+  void showMessage(String message, {bool isError = true}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,18 +109,25 @@ class _LoginPageState extends State<LoginPage> {
 
           SizedBox(
             width: 380.0,
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Enter your password',
-
-                prefixIcon: Icon(
-                  Icons.star_border_purple500_sharp,
-                  size: 24.0,
-                  color: Colors.white70,
-                ),
-
-              ),
-            ),
+            child: ShowHidePassword(
+                passwordField: (bool hidePassword){
+                  return  TextField(
+                    controller: passwordController,
+                    obscureText: hidePassword, //use the hidePassword status on obscureText to toggle the visibility
+                    decoration: InputDecoration(
+                      hintText: 'Enter your password',
+                      prefixIcon: Icon(
+                        Icons.password_outlined,
+                        size: 24.0,
+                        color: Colors.white70,
+                      ),
+                      /*suffixIcon: Icon(
+                        Icons.remove_red_eye,
+                        color: Colors.white,)*/
+                    ),
+                  );
+                }
+            )
           ),
 
           Row(
@@ -105,7 +154,28 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(width: 100),
 
-              Text('Forgot Password', style: TextStyle(fontSize: 16),)
+              TextButton(
+                onPressed: () async {
+                  bool linksent = await AuthService().forgotPassword(emailController.text);
+                  if (linksent){
+                    log('Forgot Password linksent success');
+                  } else {
+                    log('Forgot Password linksent failed');
+                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                },
+                child: Text(
+                  'Forgot Password',
+                  style: TextStyle(fontSize: 15,
+                      color: Colors.white,
+                      fontWeight: FontWeight.normal,
+                      decoration: TextDecoration.underline),
+                ),
+              ),
+
             ], //Row children
           ),
           SizedBox(
@@ -120,8 +190,54 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/admindashboard');
+              onPressed: () async {
+                String? emailError = validateEmail(emailController.text);
+                if (emailError != null) {
+                  showMessage(emailError);
+                  return;
+                }
+
+                // Validate password
+                String? passwordError = validatePassword(passwordController.text);
+                if (passwordError != null) {
+                  showMessage(passwordError);
+                  return;
+                }
+
+                // If both validations pass, proceed with login
+                UserCredential? user = await AuthService().signInWithEmailPassword(
+                  emailController.text,
+                  passwordController.text,
+                );
+
+                if (user != null) {
+                  log("Login success");
+                  //showMessage('Login Successful', isError: false);
+                  String userId = user.user!.uid; // Get the user's UID
+                  String? userRole = await FireStoreService().getUserRole(userId);
+
+                  if (userRole != null) {
+                    log("User role: $userRole");
+
+                    // Navigate based on role
+                    if (userRole == 'admin') {
+                      Navigator.pushNamed(context, '/admindashboard');
+                    } else if (userRole == 'customer') {
+                      Navigator.pushNamed(context, '/userdashboard');
+                    } else {
+                      // Handle unknown role
+                      showMessage("Unknown user role");
+                    }
+                  } else {
+                    log("Failed to retrieve user role");
+                    showMessage("Failed to retrieve user information");
+                  }
+
+                } else {
+                  log("Login failed");
+                  //showMessage('Invalid Credentials');
+                  showMessage("Login failed. Please check your credentials.");
+                }
               },
               child: const Text('Login', style: TextStyle(fontSize: 18, color: Colors.white),),
             ),

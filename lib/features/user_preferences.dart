@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer';
 
+import '../auth/firestore_service.dart';
+
 class UserPreferencePage extends StatefulWidget {
   const UserPreferencePage({super.key});
 
@@ -28,6 +30,20 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
     'Faith Spirituality': false,
   };
 
+  // Create a topics list that matches your new method's expectation
+  List<String> topics = [
+    'Hard Times',
+    'Working Out',
+    'Productivity',
+    'Self-esteem',
+    'Achieving goals',
+    'Inspiration',
+    'Letting Go',
+    'Love',
+    'Relationship',
+    'Faith Spirituality',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -40,35 +56,77 @@ class _UserPreferencePageState extends State<UserPreferencePage> {
 
     try {
       final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        // Get selected preferences
-        List<String> selectedPreferences = preferences.entries
-            .where((entry) => entry.value)
-            .map((entry) => entry.key)
-            .toList();
-
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .update({
-          'preferences': selectedPreferences,
-        });
-
-        // Navigate to dashboard
-        Navigator.pushReplacementNamed(context, '/userdashboard');
+      if (user == null) {
+        throw Exception('No authenticated user found');
       }
+
+      // Get selected preferences - convert from Map to List based approach
+      List<String> selectedPreferences = [];
+      for (String topic in topics) {
+        if (preferences[topic] == true) {
+          selectedPreferences.add(topic);
+        }
+      }
+
+      // Optional: Validate that at least one preference is selected
+      /*
+      if (selectedPreferences.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select at least one preference.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      */
+
+      // Get username from user document
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(user.uid)
+          .get();
+
+      String username = '';
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        username = userData['name'] ?? user.displayName ?? 'Unknown';
+      } else {
+        username = user.displayName ?? 'Unknown';
+      }
+
+      // Save preferences using FireStoreService
+      await FireStoreService().updateUserPreferences(
+        uuid: user.uid,
+        name: username,
+        preferences: selectedPreferences,
+      );
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Preferences saved successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pushNamed(context, '/userdashboard');
+
     } catch (e) {
       log("Failed to save preferences: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to save preferences. Please try again.'),
+          content: Text('Failed to save preferences: ${e.toString()}'),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
         ),
       );
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
