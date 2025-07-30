@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../auth/firestore_service.dart';
+import '../features/favourites.dart';
 import '../features/quote.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -192,7 +193,14 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FavoritesPage(),
+                      ),
+                    );
+                  },
                   icon: Icon(
                     Icons.star_border_sharp,
                     size: 30,
