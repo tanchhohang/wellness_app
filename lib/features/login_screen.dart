@@ -96,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
           SizedBox(
             width: 380.0,
             child: TextField(
+              controller: emailController,
               decoration: InputDecoration(
                 hintText: 'Enter your Email',
                 prefixIcon: Icon(

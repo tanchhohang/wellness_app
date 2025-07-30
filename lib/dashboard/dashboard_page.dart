@@ -91,7 +91,7 @@ class _DashboardPageState extends State<DashboardPage> {
         child: FilledButton.icon(
           style: ButtonStyle(
             alignment: Alignment.centerLeft,
-            backgroundColor: WidgetStatePropertyAll(Colors.white30),
+            backgroundColor: WidgetStatePropertyAll(Colors.white12),
             shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             ),
@@ -116,12 +116,19 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void _navigateToQuotesByCategory(String categoryName) {
     // Navigate to quotes page with category filter
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => QuotePage(categoryFilter: categoryName),
-      ),
-    );
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              QuotePage(
+                categoryFilter: categoryName,
+                userId: user.uid,
+              ),
+        ),
+      );
+    }
   }
 
   Widget build(BuildContext context) {

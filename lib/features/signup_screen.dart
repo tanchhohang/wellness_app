@@ -200,7 +200,7 @@ class _SignupPageState extends State<SignupPage> {
 
                   await FireStoreService().insertNewUserData(
                       email: user.user?.email??'',
-                      name: user.user?.email??'',
+                      name: usernameController.text,
                       uuid: user.user?.uid??'',
                   );
 

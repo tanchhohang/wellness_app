@@ -5,7 +5,8 @@ import '../auth/firestore_service.dart';
 
 class QuotePage extends StatefulWidget {
   final String? categoryFilter;
-  const QuotePage({super.key, this.categoryFilter});
+  final String userId;
+  const QuotePage({super.key, this.categoryFilter, required this.userId});
 
   @override
   State<QuotePage> createState() => _QuotePageState();
@@ -53,6 +54,44 @@ class _QuotePageState extends State<QuotePage> {
         isLoading = false;
         currentQuote = null;
       });
+    }
+  }
+
+  Future<void> addToFavorites() async {
+    if (currentQuote == null) return;
+
+    try {
+      bool success = await FireStoreService().addToFavorites(
+        userId: widget.userId,
+        quoteId: currentQuote!['id'],
+        quoteText: currentQuote!['quoteText'],
+        authorName: currentQuote!['authorName'],
+        categoryName: currentQuote!['name'],
+      );
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Quote added to favorites!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to add quote to favorites'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      log('Error adding to favorites: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error adding quote to favorites'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -110,6 +149,20 @@ class _QuotePageState extends State<QuotePage> {
                   fontSize: 16,
                 ),
               ),
+            ),
+            // Heart button for favorites
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: addToFavorites,
+                  icon: Icon(
+                    Icons.favorite_border,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
