@@ -5,9 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:show_hide_password/show_hide_password.dart';
 
-import 'package:wellness_app/auth/auth_service.dart';
+import 'package:wellness_app/services/auth_service.dart';
+import 'package:wellness_app/services/firestore_service.dart';
 
-import 'package:wellness_app/auth/firestore_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

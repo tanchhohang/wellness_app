@@ -9,7 +9,7 @@ class AuthService {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      // Obtain the auth details from the request
+      // Obtain the services details from the request
       final GoogleSignInAuthentication? googleAuth =
       await googleUser?.authentication;
 
@@ -86,6 +86,6 @@ class AuthService {
     return FirebaseAuth.instance.currentUser != null;
   }
 
-  // Stream of auth state changes
+  // Stream of services state changes
   Stream<User?> get authStateChanges => FirebaseAuth.instance.authStateChanges();
 }

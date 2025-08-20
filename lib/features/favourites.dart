@@ -2,9 +2,8 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import '../auth/firestore_service.dart';
 import '../features/quote.dart';
+import '../services/firestore_service.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});

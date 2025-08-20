@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:wellness_app/features//login_screen.dart';
 import 'package:wellness_app/features/signup_screen.dart';
 
-import 'package:wellness_app/auth/auth_service.dart';
+import 'package:wellness_app/services/auth_service.dart';
+
 
 
 class ProfilePage extends StatefulWidget {

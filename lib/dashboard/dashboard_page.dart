@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../auth/firestore_service.dart';
 import '../features/favourites.dart';
 import '../features/quote.dart';
+import '../services/fcm_service.dart';
+import '../services/firestore_service.dart';
+import '../services/notification_service.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -25,6 +28,51 @@ class _DashboardPageState extends State<DashboardPage> {
     loadDashboardData();
   }
 
+  Future<void> _checkPendingNotifications() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Update FCM token for current session
+        await FCMServices().updateFCMTokenForUser(user.uid);
+
+        // Get pending notifications
+        List<Map<String, dynamic>> pendingNotifications =
+        await FireStoreService().getPendingNotifications(user.uid);
+
+        if (pendingNotifications.isNotEmpty) {
+          // Show local notifications for pending notifications
+          for (var notification in pendingNotifications) {
+            await NotificationService().showLocalNotification(
+              title: notification['title'],
+              body: notification['body'],
+              payload: json.encode({
+                'categoryName': notification['categoryName'],
+                'type': 'new_quote',
+              }),
+            );
+          }
+
+          // Mark notifications as read
+          await FireStoreService().markNotificationsAsRead(user.uid);
+
+          // Show snackbar
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    '${pendingNotifications.length} new quotes available!'),
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      log('Error checking pending notifications: $e');
+    }
+  }
+
   Future<void> loadDashboardData() async {
     setState(() {
       isLoading = true;
@@ -34,13 +82,14 @@ class _DashboardPageState extends State<DashboardPage> {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         log(user.uid);
-        final preferences = await FireStoreService().getUserPreferences(
-          user.uid,
-        );
+        final preferences = await FireStoreService().getUserPreferences(user.uid);
         setState(() {
           userPreference = preferences;
           isLoading = false;
         });
+
+        // Check for pending notifications
+        await _checkPendingNotifications();
       } else {
         setState(() {
           isLoading = false;
@@ -50,7 +99,6 @@ class _DashboardPageState extends State<DashboardPage> {
       log('Error loading dashboard data: $e');
       setState(() {
         isLoading = false;
-        // Optionally set userPreference to empty list or show error state
         userPreference = [];
       });
     }
@@ -122,16 +170,16 @@ class _DashboardPageState extends State<DashboardPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              QuotePage(
-                categoryFilter: categoryName,
-                userId: user.uid,
-              ),
+          builder: (context) => QuotePage(
+            categoryFilter: categoryName,
+            userId: user.uid,
+          ),
         ),
       );
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     Color getColor(Set<WidgetState> states) {
       const Set<WidgetState> interactiveStates = <WidgetState>{
@@ -147,7 +195,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: const Text(
@@ -171,7 +218,6 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ],
       ),
-
       body: Column(
         spacing: 15,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -212,7 +258,6 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ),
               ),
-
               SizedBox(
                 width: 190.0,
                 height: 70,
@@ -227,7 +272,6 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   onPressed: () {},
                   icon: Icon(Icons.alarm, size: 30, color: Colors.white),
-
                   label: Text(
                     'Remind Me',
                     style: TextStyle(fontSize: 16, color: Colors.white),
@@ -236,7 +280,6 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ],
           ),
-
           Row(
             children: [
               SizedBox(width: 10),
@@ -251,7 +294,6 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ],
           ),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -280,7 +322,6 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ],
           ),
-
           Row(
             children: [
               SizedBox(width: 35),
@@ -295,19 +336,29 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ],
           ),
-
           // Dynamic user preferences section
           if (userPreference.isNotEmpty) ...[
-            Column(
-              children: userPreference
-                  .map((preference) => _buildPreferenceButton(preference))
-                  .toList(),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: userPreference
+                      .map((preference) => _buildPreferenceButton(preference))
+                      .toList(),
+                ),
+              ),
             ),
           ] else ...[
             // Show default categories if no preferences set
             SizedBox(height: 10),
-            Column(children: [Text("No Preferences Selected")]),
-
+            Column(
+              children: [
+                Text(
+                  "No Preferences Selected!",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
             Row(
               children: [
                 SizedBox(width: 10),
@@ -322,7 +373,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ],
             ),
-
+            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -349,7 +400,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ],
             ),
-          ], //Children
+          ],
         ],
       ),
     );

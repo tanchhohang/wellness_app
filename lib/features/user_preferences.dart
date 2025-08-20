@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:developer';
 
-import '../auth/firestore_service.dart';
+import '../services/firestore_service.dart';
 
 class UserPreferencePage extends StatefulWidget {
   const UserPreferencePage({super.key});

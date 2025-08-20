@@ -3,10 +3,12 @@ import 'dart:developer';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:wellness_app/auth/firestore_service.dart';
+
 import 'package:wellness_app/features/login_screen.dart';
 import 'package:wellness_app/dashboard/dashboard_page_2.dart';
-import 'package:wellness_app/auth/auth_service.dart';
+
+import '../services/auth_service.dart';
+import '../services/firestore_service.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});

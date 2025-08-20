@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
-import '../auth/firestore_service.dart';
+
+import '../services/firestore_service.dart';
 
 
 class AddCategory extends StatefulWidget {
@@ -65,20 +66,7 @@ class _AddCategoryState extends State<AddCategory> {
 
 
   Widget build(BuildContext context) {
-/*
-    Color getColor(Set<WidgetState> states) {
-      const Set<WidgetState> interactiveStates = <WidgetState>{
-        WidgetState.pressed,
-        WidgetState.hovered,
-        WidgetState.focused,
-      };
-      if (states.any(interactiveStates.contains)) {
-        return Colors.black;
-      }
-      return Colors.white;
-    }
-*/
-
+    
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(

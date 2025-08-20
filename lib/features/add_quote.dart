@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../auth/firestore_service.dart';
 
+import '../services/firestore_service.dart';
+import 'package:wellness_app/services/notification_helper.dart';
 
 class AddQuote extends StatefulWidget {
   final String userId;
@@ -19,10 +20,6 @@ class _AddQuoteState extends State<AddQuote> {
   final TextEditingController _authorNameController = TextEditingController();
   final TextEditingController _quoteController = TextEditingController();
 
-/*  final List<String> categories = [
-    'Inspirational',
-    'Motivational',
-  ];*/
 
   @override
   void initState() {

@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'dart:math' hide log;
 import 'package:flutter/material.dart';
-import '../auth/firestore_service.dart';
+
+import '../services/firestore_service.dart';
+
 
 class QuotePage extends StatefulWidget {
   final String? categoryFilter;

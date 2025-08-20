@@ -1,28 +1,36 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:wellness_app/auth/fcm_service.dart';
-import 'package:wellness_app/features//login_screen.dart';
-import 'package:wellness_app/features//profile_page.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+
+import 'package:wellness_app/features/login_screen.dart';
+import 'package:wellness_app/features/profile_page.dart';
 import 'package:wellness_app/features/add_category.dart';
 import 'package:wellness_app/features/add_quote.dart';
 import 'package:wellness_app/features/signup_screen.dart';
 import 'package:wellness_app/dashboard/dashboard_page.dart';
 import 'package:wellness_app/dashboard/dashboard_page_2.dart';
 import 'package:wellness_app/features/user_preferences.dart';
+import 'package:wellness_app/theme/theme_provider.dart';
 
+import '../services/fcm_service.dart';
 
-
-
-void main() async{
-  WidgetsBinding _ = WidgetsFlutterBinding.ensureInitialized();
-  final FCMServices fcmServices = FCMServices();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  final FCMServices fcmServices = FCMServices();
   await fcmServices.initializeCloudMessaging();
-  fcmServices.listenFCMessage();
+  fcmServices.listenFCMMessage();
+
   String? fcmToken = await fcmServices.getFCMToken();
   log('fcm token: $fcmToken');
+
   runApp(const WellnessApp());
 }
 
@@ -32,64 +40,143 @@ class WellnessApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-      title: 'Week 2 Workshop',
-      theme: ThemeData(
-        fontFamily: 'Poppins',
-        scaffoldBackgroundColor: Colors.black,
-        colorScheme: ColorScheme.dark(secondary: Color(0xFF262626)),
-        iconButtonTheme: IconButtonThemeData(
-          style: ButtonStyle(iconColor: WidgetStateProperty.all(Colors.white)),
-        ),
-        iconTheme: IconThemeData(color: Colors.white),
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.black,
-          titleTextStyle: TextStyle(fontSize: 20, color: Colors.white),
-        ),
-        bottomSheetTheme: BottomSheetThemeData(
-          backgroundColor: Colors.black,
-          elevation: 3,
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Color(0xFF1E1E1E),
-          border: OutlineInputBorder(
-            borderSide: BorderSide.none,
-            borderRadius: BorderRadius.all(Radius.circular(12)),
-          ),
-          hintStyle: TextStyle(color: Colors.grey),
-        ),
-        timePickerTheme: TimePickerThemeData(
-          backgroundColor: Color(0xFF1E1E1E),
-          hourMinuteTextColor: Color(0xFF1E1E1E),
-          hourMinuteColor: Colors.grey,
-          dayPeriodTextColor: Colors.white70,
-          dialBackgroundColor: Colors.black,
-          dialHandColor: Colors.white,
-          dialTextColor: Colors.white,
-          entryModeIconColor: Colors.white,
-          helpTextStyle: TextStyle(color: Colors.white),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(24)),
-          ),
-        ),
-        textTheme: TextTheme(bodyMedium: TextStyle(color: Colors.white)),
-        hoverColor: Colors.transparent,
+    return MultiProvider(
+      providers: [ChangeNotifierProvider(create: (ctx) => ThemeProvider())],
+      child: ScreenUtilInit(
+        designSize: const Size(360, 690),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (_, Widget? child) {
+          return Consumer<ThemeProvider>(
+            builder: (
+                BuildContext context,
+                ThemeProvider themeProvider,
+                Widget? child,
+                ) {
+              return MaterialApp(
+                themeMode: themeProvider.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
+                debugShowCheckedModeBanner: false,
+                title: 'Week 2 Workshop',
+                theme: ThemeData(
+                  fontFamily: 'Poppins',
+                  scaffoldBackgroundColor: Colors.black,
+                  colorScheme: const ColorScheme.dark(
+                    secondary: Color(0xFF262626),
+                  ),
+                  iconButtonTheme: IconButtonThemeData(
+                    style: ButtonStyle(
+                      iconColor: WidgetStateProperty.all(Colors.white),
+                    ),
+                  ),
+                  iconTheme: const IconThemeData(color: Colors.white),
+                  appBarTheme: const AppBarTheme(
+                    backgroundColor: Colors.black,
+                    titleTextStyle: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                  bottomSheetTheme: const BottomSheetThemeData(
+                    backgroundColor: Colors.black,
+                    elevation: 3,
+                  ),
+                  inputDecorationTheme: const InputDecorationTheme(
+                    filled: true,
+                    fillColor: Color(0xFF1E1E1E),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
+                  timePickerTheme: const TimePickerThemeData(
+                    backgroundColor: Color(0xFF1E1E1E),
+                    hourMinuteTextColor: Color(0xFF1E1E1E),
+                    hourMinuteColor: Colors.grey,
+                    dayPeriodTextColor: Colors.white70,
+                    dialBackgroundColor: Colors.black,
+                    dialHandColor: Colors.white,
+                    dialTextColor: Colors.white,
+                    entryModeIconColor: Colors.white,
+                    helpTextStyle: TextStyle(color: Colors.white),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(24)),
+                    ),
+                  ),
+                  textTheme: const TextTheme(
+                    bodyMedium: TextStyle(color: Colors.white),
+                  ),
+                  hoverColor: Colors.transparent,
+                ),
+                darkTheme: ThemeData(
+                  fontFamily: 'Poppins',
+                  scaffoldBackgroundColor: Colors.black,
+                  colorScheme: const ColorScheme.dark(
+                    secondary: Color(0xFF262626),
+                  ),
+                  iconButtonTheme: IconButtonThemeData(
+                    style: ButtonStyle(
+                      iconColor: WidgetStateProperty.all(Colors.white),
+                    ),
+                  ),
+                  iconTheme: const IconThemeData(color: Colors.white),
+                  appBarTheme: const AppBarTheme(
+                    backgroundColor: Colors.black,
+                    titleTextStyle: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                  bottomSheetTheme: const BottomSheetThemeData(
+                    backgroundColor: Colors.black,
+                    elevation: 3,
+                  ),
+                  inputDecorationTheme: const InputDecorationTheme(
+                    filled: true,
+                    fillColor: Color(0xFF1E1E1E),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
+                  timePickerTheme: const TimePickerThemeData(
+                    backgroundColor: Color(0xFF1E1E1E),
+                    hourMinuteTextColor: Color(0xFF1E1E1E),
+                    hourMinuteColor: Colors.grey,
+                    dayPeriodTextColor: Colors.white70,
+                    dialBackgroundColor: Colors.black,
+                    dialHandColor: Colors.white,
+                    dialTextColor: Colors.white,
+                    entryModeIconColor: Colors.white,
+                    helpTextStyle: TextStyle(color: Colors.white),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(24)),
+                    ),
+                  ),
+                  textTheme: const TextTheme(
+                    bodyMedium: TextStyle(color: Colors.white),
+                  ),
+                  hoverColor: Colors.transparent,
+                ),
+                home: const LoginPage(),
+                routes: {
+                  '/login': (context) => const LoginPage(),
+                  '/signup': (context) => const SignupPage(),
+                  '/admindashboard': (context) => const DashboardPageTwo(),
+                  '/userdashboard': (context) => const DashboardPage(),
+                  '/profile': (context) => const ProfilePage(),
+                  '/addcategory': (context) => const AddCategory(userId: ''),
+                  '/addquote': (context) => const AddQuote(userId: ''),
+                  '/userpreference': (context) => const UserPreferencePage(),
+                },
+              );
+            },
+          );
+        },
       ),
-
-        home: const LoginPage(),
-      routes:{
-        '/login' : (context) => const LoginPage(),
-        '/signup': (context) => const SignupPage(),
-        '/admindashboard': (context) => const DashboardPageTwo(),
-        '/userdashboard': (context) => const DashboardPage(),
-        '/profile': (context) => const ProfilePage(),
-        '/addcategory': (context) => const AddCategory(userId: '',),
-        '/addquote': (context) => const AddQuote(userId: '',),
-        '/userpreference': (context) => const UserPreferencePage(),
-      }
-
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wellness_app/auth/firestore_service.dart';
+
+import '../services/firestore_service.dart';
 
 class DashboardPageTwo extends StatefulWidget {
   const DashboardPageTwo({super.key});
